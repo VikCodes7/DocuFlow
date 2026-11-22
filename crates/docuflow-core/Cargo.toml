@@ -1,0 +1,23 @@
+[package]
+name = "docuflow-core"
+description = "DocuFlow image and PDF processing. Has no Tauri dependency (AD-1)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde.workspace = true
+specta.workspace = true
+specta-typescript.workspace = true
+thiserror.workspace = true
+
+# Added as each feature is implemented (see DocuFlow_Technical_Foundation_v3.md §5.1):
+#   image, fast_image_resize, mozjpeg, webp, oxipng, color_quant, kamadak-exif,
+#   lopdf, pdfium-render, rayon
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[lints]
+workspace = true

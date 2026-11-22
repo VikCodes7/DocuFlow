@@ -1,0 +1,30 @@
+# Rust
+/target/
+
+# Tauri generated files
+/src-tauri/gen/
+
+# PDFium binaries are downloaded per platform, not committed
+/src-tauri/resources/pdfium/*
+!/src-tauri/resources/pdfium/.gitkeep
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Generated notices
+THIRD_PARTY_NOTICES*.html
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Never commit secrets (signing certificates, API keys)
+.env
+.env.*
+*.p12
+*.pfx

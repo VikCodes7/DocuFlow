@@ -1,0 +1,54 @@
+{
+  "app": {
+    "name": "DocuFlow",
+    "tagline": "Your files. Your device. Your privacy.",
+    "version": "Version {{version}}"
+  },
+  "nav": {
+    "imageTools": "Image tools",
+    "pdfTools": "PDF tools",
+    "history": "Recent jobs",
+    "privacy": "How your files stay local"
+  },
+  "imageTools": {
+    "title": "Image tools",
+    "description": "Compress to a target size, resize, and convert images to PDF."
+  },
+  "pdfTools": {
+    "title": "PDF tools",
+    "description": "Merge, split, organize pages and compress PDFs."
+  },
+  "history": {
+    "title": "Recent jobs",
+    "empty": "No jobs yet.",
+    "clear": "Clear history",
+    "clearNote": "Clearing history removes these records only. Your documents are never deleted."
+  },
+  "privacy": {
+    "title": "How your files stay local",
+    "points": {
+      "onDevice": "Every image and PDF is processed on this device. Nothing is uploaded.",
+      "noAccount": "There is no account and no cloud workspace.",
+      "noTelemetry": "DocuFlow sends no telemetry or analytics and doesn't check for updates.",
+      "history": "Recent jobs keeps file names and output locations on this device only. You can clear it at any time.",
+      "installer": "On Windows, the installer may download Microsoft WebView2 if it isn't already installed."
+    }
+  },
+  "common": {
+    "loading": "Loading…"
+  },
+  "errors": {
+    "PdfEncrypted": "This PDF is password-protected. Password-protected PDFs aren't supported yet.",
+    "PdfMalformed": "This PDF is damaged or isn't a valid PDF.",
+    "TargetUnreachable": "This image can't be made that small without dropping below the minimum quality. Try resizing it or choosing a different format.",
+    "FileTooLarge": "This file is too large to process.",
+    "ImageTooLarge": "This image has too many pixels to process safely.",
+    "TooManyPages": "This PDF has too many pages to process.",
+    "UnsupportedFormat": "This file format isn't supported.",
+    "PathNotAllowed": "DocuFlow can only use files and folders you've selected. Please select it again.",
+    "Cancelled": "The operation was cancelled.",
+    "InvalidInput": "Something about the input isn't valid.",
+    "Io": "The file couldn't be read or written.",
+    "Internal": "Something went wrong. Please try again."
+  }
+}

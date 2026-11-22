@@ -1,0 +1,41 @@
+[package]
+name = "docuflow-app"
+description = "DocuFlow desktop app: thin Tauri layer over docuflow-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+default-run = "docuflow-app"
+
+[lib]
+# The `_lib` suffix avoids a name clash with the binary on Windows.
+name = "docuflow_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.7", features = [] }
+
+[dependencies]
+docuflow-core.workspace = true
+tauri = { version = "2.12", features = ["protocol-asset"] }
+tauri-plugin-dialog = "2.8"
+tauri-plugin-opener = "2.7"
+dunce = "1"
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+specta.workspace = true
+specta-typescript.workspace = true
+tauri-specta.workspace = true
+tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+tracing-appender = "0.2"
+tempfile.workspace = true
+rusqlite = { version = "0.41", features = ["bundled"] }
+rusqlite_migration = "2.7"
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[lints]
+workspace = true
