@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  licenses:
+    name: License and advisory gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check licenses bans sources advisories
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run licenses:npm
+      - run: npm audit --omit=dev
+
+  check:
+    name: Lint and test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      # mozjpeg needs NASM for its SIMD code (doc §9.4).
+      - uses: ilammy/setup-nasm@v1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Rust format
+        run: cargo fmt --all --check
+      - name: Rust lint
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Rust tests (also regenerates TypeScript bindings)
+        run: cargo test --workspace
+      - name: Bindings are up to date (AD-2)
+        shell: bash
+        run: git diff --exit-code -- src/bindings || (echo "::error::src/bindings is stale. Run 'npm run bindings' and commit." && exit 1)
+
+      - name: TypeScript
+        run: npm run typecheck
+      - name: ESLint
+        run: npm run lint
+      - name: Frontend tests
+        run: npm test
+
+  build:
+    name: Build installer (${{ matrix.name }})
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS universal
+            os: macos-latest
+            rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
+            tauri-args: --target universal-apple-darwin
+          - name: Windows x64
+            os: windows-latest
+            rust-targets: x86_64-pc-windows-msvc
+            tauri-args: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-targets }}
+      - uses: Swatinem/rust-cache@v2
+      - uses: ilammy/setup-nasm@v1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build (unsigned)
+        run: npm run tauri build -- ${{ matrix.tauri-args }}
+      - name: Record installer sizes (doc §9.5)
+        shell: bash
+        run: |
+          find target -path '*/release/bundle/*' -type f \( -name '*.dmg' -o -name '*.msi' -o -name '*-setup.exe' \) \
+            -exec ls -l {} \; | tee bundle-sizes.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docuflow-${{ matrix.os }}
+          path: |
+            target/**/release/bundle/dmg/*.dmg
+            target/**/release/bundle/msi/*.msi
+            target/**/release/bundle/nsis/*-setup.exe
+            bundle-sizes.txt
+          if-no-files-found: error
